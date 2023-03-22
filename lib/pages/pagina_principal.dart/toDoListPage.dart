@@ -2,7 +2,8 @@ import 'package:aplication_task_list/domain/entities/tarefa.dart';
 import 'package:aplication_task_list/pages/pagina_principal.dart/listas/listaTasks.dart';
 import 'package:aplication_task_list/repositories/repo_tarefas.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
+
+
 
 class ToDoList extends StatefulWidget {
   const ToDoList({super.key});
@@ -18,6 +19,17 @@ class _ToDoListState extends State<ToDoList> {
   Tarefa? deletedTask;
   int? deletedTaskIndice;
   List<Tarefa>? tarefasDeleted;
+  String?textError;
+
+  @override
+  void initState() {
+    super.initState();
+    repo.getTarefas().then((value) => {
+       setState(() {
+       tarefas=value;     
+      })
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +62,7 @@ class _ToDoListState extends State<ToDoList> {
                         children: [
                           Expanded(
                             child: TextField(
+                              
                               style: TextStyle(
                                 color: Color.fromARGB(255, 33, 205, 10),
                               ),
@@ -57,6 +70,7 @@ class _ToDoListState extends State<ToDoList> {
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12)),
+                                    errorText: textError,
                                 labelText: 'Adicione uma tarefa',
                                 labelStyle: TextStyle(
                                   color: Color.fromARGB(255, 33, 205, 10),
@@ -90,6 +104,12 @@ class _ToDoListState extends State<ToDoList> {
                           ElevatedButton(
                             onPressed: () {
                               String text = taskController.text;
+                              if(text.isEmpty){
+                                setState(() {
+                                  textError='Digite algo no campo de texto';
+                                });
+                                  return;
+                              }
                               setState(() {
                                 Tarefa newTarefa = Tarefa(
                                     title: text, dateTime: DateTime.now());
@@ -98,6 +118,7 @@ class _ToDoListState extends State<ToDoList> {
 
                               taskController.clear();
                               repo.salvarLista(tarefas);
+                              textError=null;
                             },
                             style: ButtonStyle(backgroundColor:
                                 MaterialStateProperty.resolveWith<Color?>(
@@ -123,24 +144,25 @@ class _ToDoListState extends State<ToDoList> {
                       ),
 
                       // SingleChildScrollView(child: ,)  ,
-                      Container(
-                        width: 1000,
-                        height: 400,
-                        child: Padding(
-                          padding: const EdgeInsets.all(2),
-                          child: ListView(
-                            shrinkWrap:
-                                true, //parametro que faz com que a lista creça a medida que mais itens vao sendo adicionados
-                            children: [
-                              for (Tarefa titulo in tarefas)
-                                ListaItem(
-                                  title: titulo,
-                                  onDelet: onDelet,
-                                )
-                            ],
+                      
+                         Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: SizedBox(
+                            width: 400,
+                            height:350,
+                            child: ListView(
+                              shrinkWrap:
+                                  true, //parametro que faz com que a lista creça a medida que mais itens vao sendo adicionados
+                              children: [
+                                for (Tarefa titulo in tarefas)
+                                  ListaItem(
+                                    title: titulo,
+                                    onDelet: onDelet,
+                                  )
+                              ],
+                            ),
                           ),
-                        ),
-                      ),
+                         ),
 
                       SizedBox(
                         height: 10,
@@ -214,6 +236,8 @@ class _ToDoListState extends State<ToDoList> {
                       setState(() {
                         tarefas.insert(deletedTaskIndice!, deletedTask!);
                       });
+                      repo.salvarLista(tarefas);
+
                     },
                     child: Text(
                       'Desfazer',
@@ -248,6 +272,7 @@ confirmacaoDeDeletarTudo(){
           TextButton(
             onPressed: (){
             removeAll(tarefas);
+            repo.salvarLista(tarefas);
             Navigator.of(context).pop();
             }, child: Text('Limpar',
             
@@ -264,5 +289,6 @@ confirmacaoDeDeletarTudo(){
       setState(() {
         value.clear();
       });
+      repo.salvarLista(tarefas);
   }
 }
