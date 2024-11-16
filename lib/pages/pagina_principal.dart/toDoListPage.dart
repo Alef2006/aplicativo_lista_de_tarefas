@@ -121,7 +121,7 @@ class _ToDoListState extends State<ToDoList> {
                               textError=null;
                             },
                             style: ButtonStyle(backgroundColor:
-                                MaterialStateProperty.resolveWith<Color?>(
+                                WidgetStateProperty.resolveWith<Color?>(
                                     (states) {
                               return Color.fromARGB(255, 41, 41, 41);
                             })),
@@ -181,7 +181,7 @@ class _ToDoListState extends State<ToDoList> {
                           ElevatedButton(
                             onPressed: confirmacaoDeDeletarTudo,
                             style: ButtonStyle(backgroundColor:
-                                MaterialStateProperty.resolveWith<Color?>(
+                                WidgetStateProperty.resolveWith<Color?>(
                                     (states) {
                               return Color.fromARGB(255, 41, 41, 41);
                             })),
@@ -229,7 +229,7 @@ class _ToDoListState extends State<ToDoList> {
                 ),
                 ElevatedButton(
                     style: ButtonStyle(backgroundColor:
-                        MaterialStateProperty.resolveWith<Color?>((states) {
+                        WidgetStateProperty.resolveWith<Color?>((states) {
                       return Color.fromARGB(255, 41, 41, 41);
                     })),
                     onPressed: () {
